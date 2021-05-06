@@ -12,23 +12,23 @@ struct ContentView: View {
     
     var body: some View {
         
-        HStack{
-            ForEach(viewModel.cards){
+        Grid(viewModel.cards){
                 card in CardView(card: card)
                     .onTapGesture {
-                        viewModel.choose(card: card)
+                        self.viewModel.choose(card: card)
                     }
-        }
+                    .padding(5)
+        
         }.padding()
         .foregroundColor(Color.orange)
-        .font(Font.largeTitle)
+ 
     }
 }
 struct CardView: View {
     
     var card: MemoryGame<String>.Card
     
-    var body: some {
+    var body: some View {
         GeometryReader{ geometry in
             body(for: geometry.size)
         }
@@ -42,7 +42,9 @@ struct CardView: View {
                 Text(card.content)
                 
             } else {
-                RoundedRectangle(cornerRadius: cornerRadius).fill()
+                if !card.isMatched{
+                    RoundedRectangle(cornerRadius: cornerRadius).fill()
+            }
             }
         }.font(Font.system(size: fontSize(for: size)))
     }
