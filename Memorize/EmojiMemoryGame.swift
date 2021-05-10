@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+var themeColors: ([String], [Color], String) = ([],[],"")
 class EmojiMemoryGame: ObservableObject {
     @Published private var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
     static var theme = Int.random(in: 0...5)
@@ -17,8 +18,9 @@ class EmojiMemoryGame: ObservableObject {
         
 
         let random: Int = Int.random(in: 2...5)
-        let emojis = themes().first!.0
-    
+        let theme = themes()
+        let emojis = theme.0
+        themeColors = theme
         if(emojis.description.contains("🎄")) {
         return MemoryGame<String>(numberOfPairsOfCards: random) {
             pairIndex in
@@ -32,28 +34,32 @@ class EmojiMemoryGame: ObservableObject {
         }
     }
     
-    var themes = themes()
     
     func score() -> (Int) {
         return model.score
     }
+    
+    func getTheme() -> ([String], [Color], String) {
+        return themeColors
+    }
 
     
     
-    static func themes() ->  ([([String], [Color], String)]) {
-        let animals = (["🐂", "🦩", "🐇", "🦥", "🐩", "🦉"], [Color.black, Color.yellow], "Animals")
+    static func themes() ->  ([String], [Color], String) {
+        let random:Int = Int.random(in: 0...5)
+        let animals = (["🐂", "🦩", "🐇", "🦥", "🐩", "🦉"], [Color.clear, Color.yellow], "Animals")
         let birds = (["🕊", "🦢", "🐔", "🦜", "🦅", "🦆"], [Color.orange, Color.yellow], "Birds")
         let christmas = (["🎅", "🎄", "🤶🏿", "❄️", "🎁", "☃️"], [Color.red, Color.green], "Christmas")
-        let fish = (["🐠", "🐋", "🐳", "🦭", "🦈", "🐟"], [Color.blue, Color.pink], "Fish")
-        let mammals = (["🦧", "🐒", "🦍", "🦝", "🦨", "🦫"], [Color.pink, Color.red], "Mammals")
-        let shapes = (["🔴", "🟡", "⬜️", "🔷", "🟫", "🔵"], [Color.red, Color.purple], "Shapes")
+        let fish = (["🐠", "🐋", "🐳", "🦭", "🦈", "🐟"], [Color.blue, Color.green], "Fish")
+        let mammals = (["🦧", "🐒", "🦍", "🦝", "🦨", "🦫"], [Color.pink, Color.purple], "Mammals")
+        let shapes = (["🔴", "🟡", "⬜️", "🔷", "🟫", "🔵"], [Color.red, Color.gray], "Shapes")
                 
        
         
         let emojis = [animals, birds, christmas, fish, mammals, shapes]
 
        
-        return emojis
+        return emojis[random]
     }
     
     
