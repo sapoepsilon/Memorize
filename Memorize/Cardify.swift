@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct Cardify: AnimatableModifier {
-    var theme: [Color]
+    var theme: Color
     var rotation: Double
     
-    init(isFaceUp: Bool, theme: [Color]) {
+    init(isFaceUp: Bool, theme: Color) {
         rotation = isFaceUp ? 0 : 180
         self.theme = theme
         
@@ -34,7 +34,7 @@ struct Cardify: AnimatableModifier {
                 content
             }.opacity(isFaceUp ? 1 : 0)
         
-                RoundedRectangle(cornerRadius: cornerRadius).fill( LinearGradient(gradient: Gradient(colors:  theme), startPoint: .bottom, endPoint: .top))
+            RoundedRectangle(cornerRadius: cornerRadius).fill().foregroundColor(theme)
                     .opacity(isFaceUp ? 0 : 1)
             
             
@@ -44,12 +44,13 @@ struct Cardify: AnimatableModifier {
         
     }
     
+    
     private let cornerRadius: CGFloat = 10.0
     private let edgeLineWidth: CGFloat = 3.0
 }
 
 extension View {
-    func cardify(isFaceUp: Bool, themeColor: [Color]) -> some View {
+    func cardify(isFaceUp: Bool, themeColor: Color) -> some View {
         self.modifier(Cardify(isFaceUp: isFaceUp, theme: themeColor))
     }
 }

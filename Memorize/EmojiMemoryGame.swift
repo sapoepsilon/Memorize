@@ -7,40 +7,32 @@
 
 import SwiftUI
 
-var themeColors: ([String], [Color], String) = ([],[],"")
+
+
 class EmojiMemoryGame: ObservableObject {
-    @Published private var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
-    static var theme = Int.random(in: 0...5)
+    @Published private var model: MemoryGame<String>
+    
+    private(set) var theme: EmojiMemoryTheme
 
-
-    private static func createMemoryGame() -> MemoryGame<String> {
-        
-        
-
-        let random: Int = Int.random(in: 2...5)
-        let theme = themes()
-        let emojis = theme.0
-        themeColors = theme
-        if(emojis.description.contains("🎄")) {
-        return MemoryGame<String>(numberOfPairsOfCards: random) {
-            pairIndex in
-            return emojis[pairIndex]
-        }
-        } else {
-            return MemoryGame<String>(numberOfPairsOfCards: 5) {
-                pairIndex in
-                return emojis[pairIndex]
-            }
-        }
+    init(theme: EmojiMemoryTheme? = nil) {
+        self.theme = theme ?? ThemeDocument().returnedEmoji.randomElement()!
+        let emoji = self.theme.emoji.shuffled()
+        model = MemoryGame(numberOfPairsOfCards: self.theme.numberOfPairs) { emoji[$0] }
     }
     
-    
+
     func score() -> (Int) {
         return model.score
     }
     
-    func getTheme() -> ([String], [Color], String) {
-        return themeColors
+    
+    func setEmoji(game theme: EmojiMemoryTheme) {
+        self.theme = theme
+    }
+    
+    func getTheme() -> EmojiMemoryTheme {
+        
+        return  self.theme
     }
     
     func bonusScore() -> (Int) {
@@ -49,25 +41,6 @@ class EmojiMemoryGame: ObservableObject {
     
     func negativePoints() -> (Int) {
         return model.negativePoints
-    }
-
-    
-    
-    static func themes() ->  ([String], [Color], String) {
-        let random:Int = Int.random(in: 0...5)
-        let animals = (["🐂", "🦩", "🐇", "🦥", "🐩", "🦉"], [Color.clear, Color.yellow], "Animals")
-        let birds = (["🕊", "🦢", "🐔", "🦜", "🦅", "🦆"], [Color.orange, Color.yellow], "Birds")
-        let christmas = (["🎅", "🎄", "🤶🏿", "❄️", "🎁", "☃️"], [Color.red, Color.green], "Christmas")
-        let fish = (["🐠", "🐋", "🐳", "🦭", "🦈", "🐟"], [Color.blue, Color.green], "Fish")
-        let mammals = (["🦧", "🐒", "🦍", "🦝", "🦨", "🦫"], [Color.pink, Color.purple], "Mammals")
-        let shapes = (["🔴", "🟡", "⬜️", "🔷", "🟫", "🔵"], [Color.red, Color.gray], "Shapes")
-                
-       
-        
-        let emojis = [animals, birds, christmas, fish, mammals, shapes]
-
-       
-        return emojis[random]
     }
     
     
@@ -84,7 +57,16 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func newGame() {
-        model = EmojiMemoryGame.createMemoryGame()
-    }
+        let emoji = theme.emoji.shuffled()
 
+        model = MemoryGame<String>(numberOfPairsOfCards: theme.numberOfPairs, cardContentFactory:  { emoji[$0] })
+    }
+    
+
+    
+}
+
+extension Data {
+    // just a simple converter from a Data to a String
+    var utf8: String? { String(data: self, encoding: .utf8 ) }
 }
